@@ -1,12 +1,10 @@
 #local terraform directories
 **/.terraform/*
-*.terraform.lock.hcl
 #State Files
 *.tftstate
 *.tfstate.*
-*.tfstate
 #Crash log files
 *.log
 
 #Sensive date
-*.tfvars
+.tfvars
