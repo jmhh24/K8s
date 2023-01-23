@@ -1,0 +1,8 @@
+secretGenerator:
+- name: myswl-pass
+  literals:
+  - password= idontknow
+
+resources:
+  - mysql-deployment.yaml
+  - wordpress-deployment.yaml
