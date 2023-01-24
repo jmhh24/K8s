@@ -27,7 +27,7 @@ resource "aws_eks_cluster" "eks" {
   name     = "eks"
   role_arn = aws_iam_role.eks_cluster.arn
   
-  version = "1.18"
+ 
 
   vpc_config {
     endpoint_private_access = false
@@ -84,9 +84,9 @@ resource "aws_eks_node_group" "nodes_general" {
   node_role_arn = aws_iam_role.nodes_general.arn
   subnet_ids = [var.sub_private_1_id, var.sub_private_2_id]
   scaling_config {
-    desired_size = 1
-    max_size = 1
-    min_size = 1
+    desired_size = 2
+    max_size = 2
+    min_size = 2
   }
     ami_type = "AL2_x86_64"
     capacity_type = "ON_DEMAND"
@@ -96,7 +96,7 @@ resource "aws_eks_node_group" "nodes_general" {
     labels = {
       role = "nodes_general"
     }
-    version = "1.18"
+    version = "1.23"
     depends_on = [
       aws_iam_role_policy_attachment.amazon_eks_worker_node_policy,
       aws_iam_role_policy_attachment.amazoneks_cni_poliy,

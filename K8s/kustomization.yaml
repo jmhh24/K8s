@@ -1,5 +1,5 @@
 secretGenerator:
-- name: myswl-pass
+- name: mysql-pass
   literals:
   - password= idontknow
 
