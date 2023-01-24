@@ -10,4 +10,4 @@
 
 #Sensive date
 *.tfvars
-*.kustomization.yaml
+*.kustomization
