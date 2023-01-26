@@ -1,8 +1,8 @@
 #### VPC Creation ####
 resource "aws_vpc" "main" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
-  enable_dns_support = true
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
@@ -19,73 +19,73 @@ resource "aws_internet_gateway" "gw" {
 }
 ### Subnets Creation #########
 resource "aws_subnet" "public_1" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.public1_cidr
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public1_cidr
   availability_zone = "us-east-1a"
 
   tags = {
-    Name = "sub-public1"
-    map_public_ip_on_launch = true
+    Name                        = "sub-public1"
+    map_public_ip_on_launch     = true
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
-    }
+    "kubernetes.io/role/elb"    = 1
   }
-  resource "aws_subnet" "public_2" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.public2_cidr
+}
+resource "aws_subnet" "public_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public2_cidr
   availability_zone = "us-east-1b"
 
   tags = {
-    Name = "sub-public-2"
-    map_public_ip_on_launch = true
+    Name                        = "sub-public-2"
+    map_public_ip_on_launch     = true
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
-    }
+    "kubernetes.io/role/elb"    = 1
   }
+}
 resource "aws_subnet" "private_1" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.private1_cidr
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private1_cidr
   availability_zone = "us-east-1a"
 
   tags = {
-    Name = "sub-private1"
+    Name                        = "sub-private1"
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
-    }
+    "kubernetes.io/role/elb"    = 1
   }
+}
 resource "aws_subnet" "private_2" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.private2_cidr
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private2_cidr
   availability_zone = "us-east-1b"
 
   tags = {
-    Name = "sub-private2"
+    Name                        = "sub-private2"
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
-    }
+    "kubernetes.io/role/elb"    = 1
   }
+}
 
-  ### Elastic Ips Creation  #####
-  resource "aws_eip" "nat1" {
-    depends_on = [aws_internet_gateway.gw]  
+### Elastic Ips Creation  #####
+resource "aws_eip" "nat1" {
+  depends_on = [aws_internet_gateway.gw]
+}
+resource "aws_eip" "nat2" {
+  depends_on = [aws_internet_gateway.gw]
+}
+resource "aws_nat_gateway" "nat1" {
+  allocation_id = aws_eip.nat1.id
+  subnet_id     = aws_subnet.public_1.id
+  tags = {
+    "Name" = "gw-nat1"
   }
-  resource "aws_eip" "nat2" {
-    depends_on = [aws_internet_gateway.gw] 
+}
+resource "aws_nat_gateway" "nat2" {
+  allocation_id = aws_eip.nat2.id
+  subnet_id     = aws_subnet.public_2.id
+  tags = {
+    "Name" = "gw-nat2"
   }
-  resource "aws_nat_gateway" "nat1" {
-    allocation_id = aws_eip.nat1.id
-    subnet_id = aws_subnet.public_1.id
-    tags = {
-      "Name" = "gw-nat1"
-    }  
-  }
-  resource "aws_nat_gateway" "nat2" {
-    allocation_id = aws_eip.nat2.id
-    subnet_id = aws_subnet.public_2.id
-    tags = {
-      "Name" = "gw-nat2"
-    }  
-  }
+}
 #### Route Tables Creation #####
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
